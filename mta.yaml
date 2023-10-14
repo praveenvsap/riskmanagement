@@ -1,9 +1,14 @@
+## Generated mta.yaml based on template version 0.4.0
+## appName = risk-management
+## language=nodejs; multitenant=false
+## approuter=
 _schema-version: '3.1'
 ID: riskmanagement
 version: 1.0.0
 description: "A simple CAP project."
 parameters:
   enable-parallel-deployments: true
+
 build-parameters:
   before-all:
     - builder: custom
@@ -11,14 +16,22 @@ build-parameters:
         - npx cds build --production
         - npx -p @sap/cds-dk cds build --production
         - npx rimraf gen/db/src/gen/data
+
 modules:
+  # --------------------- SERVER MODULE ------------------------
   - name: riskmanagement-srv
+  # ------------------------------------------------------------
     type: nodejs
     path: gen/srv
     parameters:
       buildpack: nodejs_buildpack
     build-parameters:
       builder: npm
+      ignore:
+        - 'default-*.json'
+        - .env
+        - '*node_modules*'
+        - package-lock.json
     provides:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
@@ -28,16 +41,63 @@ modules:
       - name: riskmanagement-db
       - name: riskmanagement-destination
 
+  # -------------------- SIDECAR MODULE ------------------------
   - name: riskmanagement-db-deployer
+  # ------------------------------------------------------------
     type: hdb
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
+    build-parameters:
+      ignore: ["default-env.json", ".env"] 
     requires:
       - name: riskmanagement-db
+      - name: riskmanagement-auth
+
+  # --------------------  APPROUTER ----------------------------
+  - name: riskmanagement-approuter
+  # ------------------------------------------------------------
+    type: nodejs
+    path: approuter
+    requires:
+      - name: riskmanagement-auth
+      - name: srv-api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          strictSSL: true
+          name: srv-binding
+          url: "~{srv-url}"
+    build-parameters:
+      requires:
+        - name: riskmanagement-app
+          artifacts:
+            - ./*
+          target-path: resources
+      ignore:
+        - 'default-*.json'
+        - .env
+        - '*node_modules*'
+        - package-lock.json
+    parameters:
+      memory: 256M
+      disk-quota: 512M
+      keep-existing-routes: true
+
+  # ------------------- UI -------------------------------------
+  - name: riskmanagement-app
+  # ------------------------------------------------------------
+    type: html5
+    path: app
+    build-parameters:
+      supported-platforms: []
 
 resources:
+  # services extracted from CAP configuration
+  # 'service-plan' can be configured via 'cds.requires.<name>.vcap.plan'
+  # ------------------------------------------------------------
   - name: riskmanagement-auth
+  # ------------------------------------------------------------ 
     type: org.cloudfoundry.managed-service
     parameters:
       service: xsuaa
@@ -55,12 +115,18 @@ resources:
             description: View Risks
             role-template-references:
               - $XSAPPNAME.RiskViewer
+
+  # ------------------------------------------------------------            
   - name: riskmanagement-db
+  # ------------------------------------------------------------
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
+
+  # ------------------------------------------------------------
   - name: riskmanagement-destination
+  # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
       service: destination
