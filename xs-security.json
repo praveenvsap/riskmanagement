@@ -3,29 +3,29 @@
   "tenant-mode": "dedicated",
   "scopes": [
     {
-      "name": "$XSAPPNAME.RiskViewer",
-      "description": "RiskViewer"
+      "name": "$XSAPPNAME.RiskViewerCAP",
+      "description": "RiskViewerCAP"
     },
     {
-      "name": "$XSAPPNAME.RiskManager",
-      "description": "RiskManager"
+      "name": "$XSAPPNAME.RiskManagerCAP",
+      "description": "RiskManagerCAP"
     }
   ],
   "attributes": [],
   "role-templates": [
     {
-      "name": "RiskViewer",
+      "name": "RiskViewerCAP",
       "description": "generated",
       "scope-references": [
-        "$XSAPPNAME.RiskViewer"
+        "$XSAPPNAME.RiskViewerCAP"
       ],
       "attribute-references": []
     },
     {
-      "name": "RiskManager",
+      "name": "RiskManagerCAP",
       "description": "generated",
       "scope-references": [
-        "$XSAPPNAME.RiskManager"
+        "$XSAPPNAME.RiskManagerCAP"
       ],
       "attribute-references": []
     }
