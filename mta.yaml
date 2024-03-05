@@ -3,7 +3,7 @@
 ## language=nodejs; multitenant=false
 ## approuter=
 _schema-version: '3.1'
-ID: riskmanagementcap
+ID: riskmanagement
 version: 1.0.0
 description: "A simple CAP project."
 parameters:
@@ -19,7 +19,7 @@ build-parameters:
 
 modules:
   # --------------------- SERVER MODULE ------------------------
-  - name: riskmanagementcap-srv
+  - name: riskmanagement-srv
   # ------------------------------------------------------------
     type: nodejs
     path: gen/srv
@@ -37,12 +37,12 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: riskmanagementcap-auth
-      - name: riskmanagementcap-db
-      - name: riskmanagementcap-destination
+      - name: riskmanagement-auth
+      - name: riskmanagement-db
+      - name: riskmanagement-destination
 
   # -------------------- SIDECAR MODULE ------------------------
-  - name: riskmanagementcap-db-deployer
+  - name: riskmanagement-db-deployer
   # ------------------------------------------------------------
     type: hdb
     path: gen/db
@@ -51,16 +51,16 @@ modules:
     build-parameters:
       ignore: ["default-env.json", ".env"] 
     requires:
-      - name: riskmanagementcap-db
-      - name: riskmanagementcap-auth
+      - name: riskmanagement-db
+      - name: riskmanagement-auth
 
   # --------------------  APPROUTER ----------------------------
-  - name: riskmanagementcap-approuter
+  - name: riskmanagement-approuter
   # ------------------------------------------------------------
     type: nodejs
     path: approuter
     requires:
-      - name: riskmanagementcap-auth
+      - name: riskmanagement-auth
       - name: srv-api
         group: destinations
         properties:
@@ -70,7 +70,7 @@ modules:
           url: "~{srv-url}"
     build-parameters:
       requires:
-        - name: riskmanagementcap-app
+        - name: riskmanagement-app
           artifacts:
             - ./*
           target-path: resources
@@ -85,7 +85,7 @@ modules:
       keep-existing-routes: true
 
   # ------------------- UI -------------------------------------
-  - name: riskmanagementcap-app
+  - name: riskmanagement-app
   # ------------------------------------------------------------
     type: html5
     path: app
@@ -96,7 +96,7 @@ resources:
   # services extracted from CAP configuration
   # 'service-plan' can be configured via 'cds.requires.<name>.vcap.plan'
   # ------------------------------------------------------------
-  - name: riskmanagementcap-auth
+  - name: riskmanagement-auth
   # ------------------------------------------------------------ 
     type: org.cloudfoundry.managed-service
     parameters:
@@ -104,20 +104,20 @@ resources:
       service-plan: application
       path: ./xs-security.json
       config:
-        xsappname: riskmanagementcap-${org}-${space}
+        xsappname: riskmanagement-${org}-${space}
         tenant-mode: dedicated
         role-collections:
-          - name: 'RiskManagerCAP-${space}'
+          - name: 'RiskManager-${space}'
             description: Manage Risks
             role-template-references:
-              - $XSAPPNAME.RiskManagerCAP
-          - name: 'RiskViewerCAP-${space}'
+              - $XSAPPNAME.RiskManager
+          - name: 'RiskViewer-${space}'
             description: View Risks
             role-template-references:
-              - $XSAPPNAME.RiskViewerCAP
+              - $XSAPPNAME.RiskViewer
 
   # ------------------------------------------------------------            
-  - name: riskmanagementcap-db
+  - name: riskmanagement-db
   # ------------------------------------------------------------
     type: com.sap.xs.hdi-container
     parameters:
@@ -125,7 +125,7 @@ resources:
       service-plan: hdi-shared
 
   # ------------------------------------------------------------
-  - name: riskmanagementcap-destination
+  - name: riskmanagement-destination
   # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
