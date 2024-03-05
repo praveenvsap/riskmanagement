@@ -28,4 +28,4 @@ applications:
   instances: 1
   buildpack: nodejs_buildpack
   services:
-  - riskmanagement-db
+  - riskmanagementcap-db

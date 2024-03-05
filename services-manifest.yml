@@ -2,10 +2,10 @@
 # appName = riskmanagement
 ---
 create-services:
-  - name: riskmanagement-db
+  - name: riskmanagementcap-db
     broker: hana
     plan: hdi-shared
-  - name: riskmanagement-auth
+  - name: riskmanagementcap-auth
     broker: xsuaa
     plan: application
     parameters: xs-security.json
