@@ -1,5 +1,5 @@
 {
-  "xsappname": "riskmanagement-dev",
+  "xsappname": "riskmanagementcap-dev",
   "tenant-mode": "dedicated",
   "scopes": [
     {
