@@ -9,7 +9,7 @@ annotate rm.Risks with {
     descr       @title : 'Description';
     miti        @title : 'Mitigation';
     impact      @title : 'Impact';
-    bp          @title : 'S4 Business Partner';
+    bp          @title : 'Business Partner';
     criticality @title : 'Criticality';
 }
 
