@@ -13,7 +13,8 @@ build-parameters:
   before-all:
     - builder: custom
       commands:
-        - npm install --production
+        - npm install
+        - npm install --include-dev
         - npx cds build --production
         - npx -p @sap/cds-dk@latest cds build --production
         - npx rimraf gen/db/src/gen/data
